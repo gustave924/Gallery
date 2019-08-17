@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search_item"
+        android:title="@string/search"
+        android:icon="@drawable/ic_search_white_24dp"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/sort_item"
+        android:title="@string/sort"
+        android:icon="@drawable/ic_sort_white_24dp"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/open_camera_item"
+        android:title="@string/open_camera"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/filter_media_item"
+        android:title="@string/filter_media"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/change_view_type_item"
+        android:title="@string/change_view_type"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/show_all_folder_content_item"
+        android:title="@string/show_all_folders_content"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/temporarily_show_hidden_item"
+        android:title="@string/temporarily_show_hidden"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/create_new_folder_item"
+        android:title="@string/create_new_folder"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/increase_column_count_item"
+        android:title="@string/increase_column_count"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/reduce_column_count_item"
+        android:title="@string/reduce_column_count"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/settings_item"
+        android:title="@string/settings"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/about_item"
+        android:title="@string/about"
+        app:showAsAction="never"/>
+
+</menu>

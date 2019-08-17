@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/dimGrey"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorLightGrey"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp"
+        android:text="Filter media"/>
+
+    <CheckBox
+        android:id="@+id/images_check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:buttonTint="@drawable/main_activity_checkbox_selectors"
+        android:checked="true"
+        android:text="Images"
+        android:textColor="@color/textColorLightGrey" />
+    <CheckBox
+        android:id="@+id/videos_check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:buttonTint="@drawable/main_activity_checkbox_selectors"
+        android:checked="true"
+        android:text="Videos"
+        android:textColor="@color/textColorLightGrey" />
+    <CheckBox
+        android:id="@+id/gifs_check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:buttonTint="@drawable/main_activity_checkbox_selectors"
+        android:checked="true"
+        android:text="GIFs"
+        android:textColor="@color/textColorLightGrey" />
+    <CheckBox
+        android:id="@+id/raw_images_check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:buttonTint="@drawable/main_activity_checkbox_selectors"
+        android:checked="true"
+        android:text="RAW images"
+        android:textColor="@color/textColorLightGrey" />
+    <CheckBox
+        android:id="@+id/svgs_images_check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:buttonTint="@drawable/main_activity_checkbox_selectors"
+        android:checked="true"
+        android:text="SVGs"
+        android:textColor="@color/textColorLightGrey" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="end">
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="cancel"
+            android:background="@android:color/transparent"
+            android:textColor="@color/textColorLightGrey"/>
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ok"
+            android:background="@android:color/transparent"
+            android:textColor="@color/textColorLightGrey"/>
+    </LinearLayout>
+
+</LinearLayout>

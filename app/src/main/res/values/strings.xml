@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Gallery</string>
+
+    <!-- activityMainToolbarItems -->
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
+    <string name="open_camera">Open camera</string>
+    <string name="filter_media">Filter Media</string>
+    <string name="change_view_type">Change view type</string>
+    <string name="show_all_folders_content">Show all folders content</string>
+    <string name="temporarily_show_hidden">Temporarily show hidden</string>
+    <string name="create_new_folder">Create new folder</string>
+    <string name="increase_column_count">Increase column count</string>
+    <string name="reduce_column_count">Reduce column count</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    
+</resources>
