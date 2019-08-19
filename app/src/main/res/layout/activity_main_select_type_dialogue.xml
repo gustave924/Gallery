@@ -41,7 +41,7 @@
         android:checked="true"
         android:text="GIFs"
         android:textColor="@color/textColorLightGrey" />
-    <CheckBox
+    <!--<CheckBox
         android:id="@+id/raw_images_check_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
         android:buttonTint="@drawable/main_activity_checkbox_selectors"
         android:checked="true"
         android:text="SVGs"
-        android:textColor="@color/textColorLightGrey" />
+        android:textColor="@color/textColorLightGrey" />-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

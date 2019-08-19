@@ -6,12 +6,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -19,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +30,7 @@ import android.webkit.MimeTypeMap;
 
 import com.bignerdranch.android.simplegalleryreplica.R;
 import com.bignerdranch.android.simplegalleryreplica.model.ImageFolder;
+import com.bignerdranch.android.simplegalleryreplica.utils.SharedPreferencesConstants;
 import com.bignerdranch.android.simplegalleryreplica.view.adapters.MainAdapter;
 import com.bignerdranch.android.simplegalleryreplica.view.dialoges.FilterDialog;
 import com.bignerdranch.android.simplegalleryreplica.view.dialoges.OnFilterTypes;
@@ -45,6 +49,8 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity {
 
+
+
     private static final int OPEN_CAMERA_CODE = 1001;
 
     @BindView(R.id.toolbar) Toolbar mToolbar;
@@ -60,12 +66,16 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 
+
         mToolbar.getOverflowIcon()
                 .setColorFilter(Color.parseColor("#FFFFFF"),
                         android.graphics.PorterDuff.Mode.SRC_IN);
-
-        mPhotosRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mAdapter = new MainAdapter(this, mImageFolders);
+        if(mAdapter.getDisplayType() == mAdapter.GRID){
+            mPhotosRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        }else{
+            mPhotosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }
         mPhotosRecyclerView.setAdapter(mAdapter);
 
         setSupportActionBar(mToolbar);
@@ -90,22 +100,98 @@ public class MainActivity extends AppCompatActivity {
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     public  void getImageFolders(){
         mImageFolders.clear();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        List<String> mimeTypes = new ArrayList<>();
+        if(sp.getBoolean(SharedPreferencesConstants.IS_IMAGES_DISPLAYABLE, true)){
+            mimeTypes.add(getMIMEType("jpg"));
+            mimeTypes.add(getMIMEType("png"));
+        }
+
+        if(sp.getBoolean(SharedPreferencesConstants.IS_VIDEOS_DISPLAYABLE, true)){
+            mimeTypes.add(getMIMEType("3gp"));
+            mimeTypes.add(getMIMEType("mp4"));
+            mimeTypes.add(getMIMEType("webm"));
+            mimeTypes.add(getMIMEType("mkv"));
+        }
+
+        if(sp.getBoolean(SharedPreferencesConstants.IS_GIFS_DISPLAYABLE, true)){
+            mimeTypes.add(getMIMEType("gif"));
+        }
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Images.Media.DATA,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
 
         String orderBy = MediaStore.Images.Media.DATE_MODIFIED + " DESC";
 
-        String selectionMimeType = MediaStore.Files.FileColumns.MIME_TYPE + "=?";
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("image/*");
+        String selectionMimeType = MediaStore.Files.FileColumns.MIME_TYPE + " IN(";
+        for (int i = 0; i < mimeTypes.size(); i++ ){
+            if(i == mimeTypes.size() -1){
+                selectionMimeType = selectionMimeType +"? ";
+            }else{
+                selectionMimeType = selectionMimeType +"?, ";
+            }
 
-        String[] selectionArgs = new String[]{};
+        }
+        selectionMimeType = selectionMimeType + ")";
+
+        String[] args = new String[mimeTypes.size()];
+        mimeTypes.toArray(args);
+
+        Cursor cursor = this.getContentResolver().query(uri,
+                projection,
+                selectionMimeType,
+                args,
+                orderBy);
+
+        int dataIndex = cursor.getColumnIndex(projection[0]);
+        int nameIndex = cursor.getColumnIndex(projection[1]);
+
+
+
+        if(cursor != null){
+            while (cursor.moveToNext()){
+                String firstImage = cursor.getString(dataIndex);
+                String folderName =  cursor.getString(nameIndex);
+                ImageFolder imageFolder = new ImageFolder(folderName, firstImage, 1);
+                if(mImageFolders.contains(imageFolder)){
+                    int index = mImageFolders.indexOf(imageFolder);
+                    mImageFolders.get(index).IncrementImageCount();
+                }else{
+                    mImageFolders.add(imageFolder);
+                }
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+    public  void getImageFoldersByType(String[] args){
+        mImageFolders.clear();
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
+
+        String orderBy = MediaStore.Images.Media.DATE_MODIFIED + " DESC";
+
+        String selectionMimeType = MediaStore.Files.FileColumns.MIME_TYPE + " IN(";
+        for (int i = 0; i < args.length; i++ ){
+            if(i == args.length -1){
+                selectionMimeType = selectionMimeType +"? ";
+            }else{
+                selectionMimeType = selectionMimeType +"?, ";
+            }
+
+        }
+        selectionMimeType = selectionMimeType + ")";
+        /*String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("image/*");
+
+        String[] selectionArgs = new String[]{};*/
 
 
         Cursor cursor = this.getContentResolver().query(uri,
                 projection,
                 selectionMimeType,
-                selectionArgs,
+                args,
                 orderBy);
 
         int dataIndex = cursor.getColumnIndex(projection[0]);
@@ -129,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
         System.out.print("Yo Yo");
         mAdapter.notifyDataSetChanged();
     }
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -160,10 +248,20 @@ public class MainActivity extends AppCompatActivity {
                 FilterDialog dialog = new FilterDialog(new OnFilterTypes() {
                     @Override
                     public void onFilterTypesSelections(String[] selectionArgs) {
-
+                        MainActivityPermissionsDispatcher
+                                .getImageFoldersByTypeWithPermissionCheck(MainActivity.this,selectionArgs);
                     }
                 });
                 dialog.show(fm, "Filter");
+            case R.id.change_view_type_item:
+                if (mAdapter.getDisplayType() == mAdapter.GRID) {
+                    mAdapter.setDisplayType(mAdapter.LIST);
+                    this.mPhotosRecyclerView.setLayoutManager( new LinearLayoutManager(this));
+                } else {
+                    mAdapter.setDisplayType(mAdapter.GRID);
+                    this.mPhotosRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
+                }
+                this.mPhotosRecyclerView.setAdapter(mAdapter);
         }
         return true;
     }
@@ -193,5 +291,10 @@ public class MainActivity extends AppCompatActivity {
             case OPEN_CAMERA_CODE:
 
         }
+    }
+
+    private String getMIMEType(String extension){
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        return  mimeType;
     }
 }

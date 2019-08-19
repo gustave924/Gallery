@@ -1,6 +1,8 @@
 package com.bignerdranch.android.simplegalleryreplica.view.dialoges;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.bignerdranch.android.simplegalleryreplica.R;
+import com.bignerdranch.android.simplegalleryreplica.utils.SharedPreferencesConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,17 +29,18 @@ import butterknife.OnClick;
 public class FilterDialog extends AppCompatDialogFragment {
 
     private OnFilterTypes mOnFilterTypes;
+    private SharedPreferences mSharedPreferences;
 
     public FilterDialog(OnFilterTypes filterTypes){
         mOnFilterTypes = filterTypes;
     }
-
+    public FilterDialog(){}
 
     @BindView(R.id.images_check_box) CheckBox mImagesCheckBox;
     @BindView(R.id.videos_check_box) CheckBox mVideosCheckBox;
     @BindView(R.id.gifs_check_box) CheckBox mGIFsCheckBox;
-    @BindView(R.id.raw_images_check_box) CheckBox mRAWImagesCheckBox;
-    @BindView(R.id.svgs_images_check_box) CheckBox mSVGsImagesCheckBox;
+
+
 
     @Nullable
     @Override
@@ -45,6 +49,13 @@ public class FilterDialog extends AppCompatDialogFragment {
                 container,
                 false);
         ButterKnife.bind(this,v);
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mImagesCheckBox.setChecked(mSharedPreferences
+                .getBoolean(SharedPreferencesConstants.IS_IMAGES_DISPLAYABLE, true));
+        mVideosCheckBox.setChecked(mSharedPreferences
+                .getBoolean(SharedPreferencesConstants.IS_VIDEOS_DISPLAYABLE, true));
+        mGIFsCheckBox.setChecked(mSharedPreferences
+                .getBoolean(SharedPreferencesConstants.IS_GIFS_DISPLAYABLE, true));
         return v;
     }
 
@@ -80,7 +91,13 @@ public class FilterDialog extends AppCompatDialogFragment {
             mimeTypes.add(getMIMEType("gif"));
         }
 
-        if(mRAWImagesCheckBox.isChecked()){
+        mSharedPreferences.edit()
+                .putBoolean(SharedPreferencesConstants.IS_IMAGES_DISPLAYABLE, mImagesCheckBox.isChecked())
+                .putBoolean(SharedPreferencesConstants.IS_VIDEOS_DISPLAYABLE, mVideosCheckBox.isChecked())
+                .putBoolean(SharedPreferencesConstants.IS_GIFS_DISPLAYABLE, mGIFsCheckBox.isChecked())
+                .apply();
+
+        /*if(mRAWImagesCheckBox.isChecked()){
             mimeTypes.add(getMIMEType("DNG"));
             mimeTypes.add(getMIMEType("CR2"));
             mimeTypes.add(getMIMEType("NEF"));
@@ -89,10 +106,10 @@ public class FilterDialog extends AppCompatDialogFragment {
 
         if (mSVGsImagesCheckBox.isChecked()){
             mimeTypes.add(getMIMEType("svg"));
-        }
+        }*/
         String[] arr = new String[mimeTypes.size()];
         mOnFilterTypes.onFilterTypesSelections(mimeTypes.toArray(arr));
-
+        this.dismiss();
     }
 
     private String getMIMEType(String extension){

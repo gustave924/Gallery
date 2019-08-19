@@ -38,6 +38,12 @@ public class ImageFolder {
         return filePath;
     }
 
+    public String getFolderPath(){
+        Uri uri = Uri.parse(this.firstImageContainedPath);
+        String filePath = firstImageContainedPath.replace(uri.getLastPathSegment(), "");
+        return filePath;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         ImageFolder foreignImageFolder = (ImageFolder) obj;
